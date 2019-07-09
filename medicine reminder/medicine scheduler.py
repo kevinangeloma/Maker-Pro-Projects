@@ -1,8 +1,11 @@
-from time import sleep, strftime,localtime
+from time import time,sleep, strftime,localtime
 from datetime import datetime
 import RPi.GPIO as GPIO
-from adafruit_character_lcd import character_lcd  as LCD
-from DS3231 import SDL_DS3231 as DS3231
+from Adafruit_CharLCD import Adafruit_CharLCD  as LCD
+from DS3231 import DS3231 as DS3231
+
+rtc = DS3231.SDL_DS3231(1,0x68)
+rtc.write_now()
 
 time_window_size = 5 #duration of the reminder in minutes
 schedule = [1080,1142,1200] #list of scheduled medicine reminders
@@ -32,7 +35,7 @@ saturday = 13
 
 # Mode can either be BOARD or BCM
 GPIO.setmode(GPIO.BCM)
-GPIO.setwarning(False)
+GPIO.setwarnings(False)
 
 # Iniatilization of GPIO pins
 
@@ -45,7 +48,7 @@ GPIO.setup(friday, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(saturday, GPIO.OUT, initial=GPIO.LOW)
 
 
-lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
+lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows,lcd_backlight)
 
 was_printed = False
 off_was_printed = True

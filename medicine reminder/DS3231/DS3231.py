@@ -5,7 +5,7 @@
 # V 1.2
 # only works in 24 hour mode
 # now includes reading and writing the AT24C32 included on the SwitchDoc Labs 
-#	DS3231 / AT24C32 Module (www.switchdoc.com
+#  DS3231 / AT24C32 Module (www.switchdoc.com
 
 
 #encoding: utf-8
@@ -31,9 +31,10 @@
 # SOFTWARE.
 
 from datetime import datetime
+#from OmegaExpansion import onionI2C
 
 import time
-import smbus
+# import smbus
 
 
 def _bcd_to_int(bcd):
@@ -77,22 +78,25 @@ class SDL_DS3231():
     ###########################
     # DS3231 Code
     ###########################
-    def __init__(self, twi=1, addr=0x68, at24c32_addr=0x57):
-        self._bus = smbus.SMBus(twi)
+    def __init__(self, twi=0, addr=0x68, at24c32_addr=0x56):
+        # self._bus = smbus.SMBus(twi)
+        self._i2c = onionI2C.OnionI2C(twi)
         self._addr = addr
         self._at24c32_addr = at24c32_addr
 
 
     def _write(self, register, data):
         #print "addr =0x%x register = 0x%x data = 0x%x %i " % (self._addr, register, data,_bcd_to_int(data))
-        self._bus.write_byte_data(self._addr, register, data)
+        # self._bus.write_byte_data(self._addr, register, data)
+        self._i2c.writeByte(self._addr, register, data)
 
 
     def _read(self, data):
 
-        returndata = self._bus.read_byte_data(self._addr, data)
+        # returndata = self._bus.read_byte_data(self._addr, data)
+        returndata = self._i2c.readBytes(self._addr, data, 1)
         #print "addr = 0x%x data = 0x%x %i returndata = 0x%x %i " % (self._addr, data, data, returndata, _bcd_to_int(returndata))
-        return returndata
+        return returndata[0]
 
 
 
@@ -108,7 +112,7 @@ class SDL_DS3231():
     def _read_hours(self):
         d = self._read(self._REG_HOURS)
         if (d == 0x64):
-                d = 0x40
+            d = 0x40
         return _bcd_to_int(d & 0x3F)
 
 
@@ -162,7 +166,7 @@ class SDL_DS3231():
         if seconds is not None:
             if seconds < 0 or seconds > 59:
                 raise ValueError('Seconds is out of range [0,59].')
-	    seconds_reg = _int_to_bcd(seconds)
+            seconds_reg = _int_to_bcd(seconds)
             self._write(self._REG_SECONDS, seconds_reg)
 
         if minutes is not None:
@@ -211,37 +215,35 @@ class SDL_DS3231():
 
 
     def getTemp(self):
-   	byte_tmsb = self._bus.read_byte_data(self._addr,0x11)
-   	byte_tlsb = bin(self._bus.read_byte_data(self._addr,0x12))[2:].zfill(8)
-   	return byte_tmsb+int(byte_tlsb[0])*2**(-1)+int(byte_tlsb[1])*2**(-2)
+        # byte_tmsb = self._bus.read_byte_data(self._addr,0x11)
+        # byte_tlsb = bin(self._bus.read_byte_data(self._addr,0x12))[2:].zfill(8)
+        # return byte_tmsb+int(byte_tlsb[0])*2**(-1)+int(byte_tlsb[1])*2**(-2)
+        byte_tmsb = self._i2c.readBytes(self._addr, 0x11, 1)
+        byte_tlsb = bin(self._i2c.readBytes(self._addr, 0x12 ,1))[2:].zfill(8)
+        return byte_tmsb+int(byte_tlsb[0])*2**(-1)+int(byte_tlsb[1])*2**(-2)
 
     ###########################
     # AT24C32 Code
     ###########################
 
-    def set_current_AT24C32_address(self,address):
-	a1=address/256;
-  	a0=address%256;
-  	self._bus.write_i2c_block_data(self._at24c32_addr,a1,[a0])
+    # def set_current_AT24C32_address(self,address):
+    #  a0=address%256;
+    #  a1=address/256;
+    #  self._bus.write_i2c_block_data(self._at24c32_addr,a1,[a0])
 
-	
+  
     def read_AT24C32_byte(self, address):
         #print "i2c_address =0x%x eepromaddress = 0x%x  " % (self._at24c32_addr, address)
 
-        self.set_current_AT24C32_address(address)
-	return self._bus.read_byte(self._at24c32_addr)
+        # self.set_current_AT24C32_address(address)
+        # return self._bus.read_byte(self._at24c32_addr)
+        return self._i2c.readBytes(self._at24c32_addr, address, 1)
 
-	
 
     def write_AT24C32_byte(self, address, value):
         #print "i2c_address =0x%x eepromaddress = 0x%x value = 0x%x %i " % (self._at24c32_addr, address, value, value)
-	
-
-	a1=address/256;
-  	a0=address%256;
-  	self._bus.write_i2c_block_data(self._at24c32_addr,a1,[a0, value])
-	time.sleep(0.20)
-
-
-
-
+        # a1=address/256;
+        # a0=address%256;
+        # self._bus.write_i2c_block_data(self._at24c32_addr,a1,[a0, value])
+        self._i2c.writeBytes(self._at24c32_addr,address,value)
+        time.sleep(0.20)
