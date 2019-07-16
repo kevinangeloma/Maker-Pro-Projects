@@ -34,7 +34,7 @@ from datetime import datetime
 #from OmegaExpansion import onionI2C
 
 import time
-# import smbus
+import smbus
 
 
 def _bcd_to_int(bcd):
@@ -79,24 +79,23 @@ class SDL_DS3231():
     # DS3231 Code
     ###########################
     def __init__(self, twi=0, addr=0x68, at24c32_addr=0x56):
-        # self._bus = smbus.SMBus(twi)
-        self._i2c = onionI2C.OnionI2C(twi)
+        self._bus = smbus.SMBus(twi)
         self._addr = addr
         self._at24c32_addr = at24c32_addr
 
 
     def _write(self, register, data):
         #print "addr =0x%x register = 0x%x data = 0x%x %i " % (self._addr, register, data,_bcd_to_int(data))
-        # self._bus.write_byte_data(self._addr, register, data)
-        self._i2c.writeByte(self._addr, register, data)
+        self._bus.write_byte_data(self._addr, register, data)
+        #self._i2c.writeByte(self._addr, register, data)
 
 
     def _read(self, data):
 
-        # returndata = self._bus.read_byte_data(self._addr, data)
-        returndata = self._i2c.readBytes(self._addr, data, 1)
+        returndata = self._bus.read_byte_data(self._addr, data)
+        #returndata = self._i2c.readBytes(self._addr, data, 1)
         #print "addr = 0x%x data = 0x%x %i returndata = 0x%x %i " % (self._addr, data, data, returndata, _bcd_to_int(returndata))
-        return returndata[0]
+        return returndata
 
 
 
