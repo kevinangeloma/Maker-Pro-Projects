@@ -2,13 +2,10 @@ from time import time,sleep, strftime,localtime
 from datetime import datetime
 import RPi.GPIO as GPIO
 from Adafruit_CharLCD import Adafruit_CharLCD  as LCD
-from DS3231 import DS3231 as DS3231
 
-rtc = DS3231.SDL_DS3231(1,0x68)
-rtc.write_now()
 
 time_window_size = 5 #duration of the reminder in minutes
-schedule = [1080,1142,1200] #list of scheduled medicine reminders
+schedule = [390,720,875,1080] #list of scheduled medicine reminders
 #schedule is kept in minutes past midnight
 
 # Raspberry Pi pin setup
@@ -60,7 +57,7 @@ while run:
   message = (datetime.now().strftime('%b %d %Y \n%I:%M:%S %p\n'))
   lcd.message(message)
   sleep(1)
-  dt = list(time.localtime())
+  dt = localtime()
   hour = dt[3]
   minute = dt[4]
   second = dt[5]
