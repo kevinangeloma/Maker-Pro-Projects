@@ -94,15 +94,15 @@ def send_a_string(string_of_characters):  #steps for sending string of character
 #send characters one by one until all the strings characters are sent through data port
 
 while True: 
-    dt = localtime()
-    hour = dt[3]
-    minute = dt[4]
-    second = dt[5]
     send_a_command(0x38); #use two lines of LCD
     send_a_command(0x0E); #screen and cursor ON
     send_a_command(0x01); #clear screen
     sleep(0.1)       #sleep for 100msec
     while True:
+        dt = localtime()
+        hour = dt[3]
+        minute = dt[4]
+        second = dt[5]
         if (GPIO.input(21) == 0):
             if (h<23):    #if button1 is pressed and hour count is less than 23 increment 'h' by one
                 h=h+1
@@ -146,4 +146,4 @@ while True:
         #display RTC hours, minutes, seconds
         send_a_command(0x80 + 0x40 + 0);  #move cursor to second line
         send_a_string ("Alarm:%02d:%02d" % (h,m));  #show alarm time
-        sleep(0.5)  #wait for 100msec
+        sleep(0.1)  #wait for 100msec
