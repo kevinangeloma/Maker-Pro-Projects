@@ -4,8 +4,8 @@ import RPi.GPIO as GPIO
 from Adafruit_CharLCD import Adafruit_CharLCD  as LCD
 
 
-time_window_size = 5 #duration of the reminder in minutes
-schedule = [390,720,875,1080] #list of scheduled medicine reminders
+time_window_size = 2 #duration of the reminder in minutes
+schedule = [390,720,906,1080] #list of scheduled medicine reminders
 #schedule is kept in minutes past midnight
 
 # Raspberry Pi pin setup
@@ -107,7 +107,7 @@ while run:
                 while (n<12):
                   for i in range(lcd_columns-len(message)):
                     sleep(0.5)
-                    lcd.move.right()
+                    lcd.move_right()
                 for i in range(lcd_columns-len(message)):
                   sleep(0.5)
                   lcd.move_left()
