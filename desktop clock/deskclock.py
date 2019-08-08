@@ -90,8 +90,7 @@ def PORT(pin):            #assigning level for PI GPIO for sending data to LCD t
 def send_a_string(string_of_characters):  #steps for sending string of characters to LCD
   string_of_characters = string_of_characters.ljust(16," ")
   for i in range(16):
-    send_a_character(ord(string_of_characters[i])) 
-#send characters one by one until all the strings characters are sent through data port
+    send_a_character(ord(string_of_characters[i])) #send characters one by one until all the strings characters are sent through data port
 
 while True: 
     send_a_command(0x38); #use two lines of LCD
@@ -122,18 +121,8 @@ while True:
         if (GPIO.input(25) == 0):  #if button5 is pressed toggle Alarm ON and OFF
             if (alarm==0):
                 alarm = 1
-#                send_a_command(0x80 + 0x40 +12);
-#                send_a_string("ON");
-#                if ((h==hour)):
-#                    if ((m==minute)):
-#                        GPIO.output(22,1)
-#                    else:
-#                        GPIO.output(22,0)
             else:
                 alarm = 0
-#                send_a_command(0x80 + 0x40 + 12);
-#                send_a_string("OFF");
-#                GPIO.output(22,0)
             sleep(0.1)
 
         if (alarm==1):
@@ -143,11 +132,9 @@ while True:
             if ((h==hour)):
                 if ((m==minute)):
                     GPIO.output(22,1)  #if alarm is set, and hour-minute settings match the RTC time, trigger the buzzer
-                    sleep(0.5)
+                    sleep(0.1)
                     GPIO.output(22,0)
-                    sleep(0.5)
-#                    GPIO.output(22,1)
-#                    sleep(1)
+                    sleep(0.1)
                 else:
                     GPIO.output(22,0)
         if (alarm==0):
@@ -156,8 +143,7 @@ while True:
             GPIO.output(22,0)       #turn off the buzzer         
 
         send_a_command(0x80 + 0);   #move cursor to 0 position
-        send_a_string ("Time:%02d:%02d:%02d" % (hour,minute,second));
-        #display RTC hours, minutes, seconds
+        send_a_string ("Time:%02d:%02d:%02d" % (hour,minute,second)); #display RTC hours, minutes, seconds
         send_a_command(0x80 + 0x40 + 0);  #move cursor to second line
         send_a_string ("Alarm:%02d:%02d" % (h,m));  #show alarm time
         sleep(0.1)  #wait for 100msec
